@@ -8,7 +8,7 @@ const { tab } = useTab();
 await initEmails();
 
 // 当前选中的邮箱
-const selectedEmail = ref(emails.value?.[0].id || "");
+const selectedEmail = ref<string|undefined>(emails.value?.[0]?.id);
 
 // 获取当前URL并生成邮箱地址
 const currentUrl = computed(() => {
@@ -128,8 +128,8 @@ const toast = useToast();
               value-key="id"
               label-key="value"
               placeholder="选择邮箱"
-   
-           />
+  
+         />
         </div>
       </template>
 
@@ -155,6 +155,18 @@ const toast = useToast();
             </div>
  
         </div>
+        <div v-else class="text-center py-8">
+      <UIcon
+        name="i-heroicons-envelope"
+        class="mx-auto h-12 w-12 text-gray-400"
+      />
+      <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+        暂无邮箱
+      </h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        添加邮箱以使用表单精灵的自动生成功能
+      </p>
+    </div>
       </div>
     </UCard>
     <UCard>
