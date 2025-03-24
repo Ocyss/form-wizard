@@ -1,7 +1,7 @@
 {
-  "name": "wxt-vue-starter",
+  "name": "form-wizard",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af",
   "description": "manifest.json description",
@@ -20,6 +20,10 @@
   "dependencies": {
     "@nuxt/ui": "^3.0.1",
     "@tailwindcss/vite": "^4.0.15",
+    "@vueuse/core": "^13.0.0",
+    "@wxt-dev/storage": "^1.1.1",
+    "comctx": "^1.1.0",
+    "swapy": "^1.0.5",
     "tailwindcss": "^4.0.15",
     "vue": "^3.5.12"
   },

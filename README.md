@@ -1,7 +1,7 @@
-# WXT + Vue 3
+## 施工中
 
-This template should help get you started developing with Vue 3 in WXT.
+一个半成品，或者wxt模板项目，自用。
 
-## Recommended IDE Setup
+主要方便自己生成 Catch-all 邮箱，而不需要手动去复制url。
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
+要是有空可能接入一些AI功能，比如自动填表单。

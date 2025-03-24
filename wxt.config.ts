@@ -11,7 +11,7 @@ export default defineConfig({
     default_locale: 'zh_CN',
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
-    permissions: ['storage', 'cookies', 'notifications', 'contextMenus', 'sidePanel', 'activeTab', 'scripting'],
+    permissions: ['storage', 'sidePanel', 'activeTab', 'scripting'],
     host_permissions: ['http://*/*', 'https://*/*'],
   },
   vite: () => ({

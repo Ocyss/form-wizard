@@ -10,8 +10,7 @@ export default antfu({
   rules: {
     'no-console': 'off',
     'no-alert': 'off',
-    'ts/no-unsafe-return': 'off',
-    'ts/no-unsafe-argument': 'off',
+    'ts/no-namespace': 'off',
     'ts/strict-boolean-expressions': 'off',
     'unicorn/prefer-dom-node-text-content': 'off',
   },

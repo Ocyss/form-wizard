@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "wxt template"
+    "message": "form wizard"
   },
   "extDescription": {
-    "message": "wxt template"
+    "message": "(Semi-finished, for personal use) Intelligent form filling assistant, helps you quickly fill out various web forms, improving work efficiency. Supports custom templates and intelligent recognition, making form filling easy and simple."
   }
 }

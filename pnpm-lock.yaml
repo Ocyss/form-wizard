@@ -14,6 +14,18 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.0.15
         version: 4.0.15(vite@6.2.2(@types/node@22.13.11)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.0))
+      '@vueuse/core':
+        specifier: ^13.0.0
+        version: 13.0.0(vue@3.5.13(typescript@5.6.3))
+      '@wxt-dev/storage':
+        specifier: ^1.1.1
+        version: 1.1.1
+      comctx:
+        specifier: ^1.1.0
+        version: 1.1.0
+      swapy:
+        specifier: ^1.0.5
+        version: 1.0.5
       tailwindcss:
         specifier: ^4.0.15
         version: 4.0.15
@@ -1537,6 +1549,9 @@ packages:
 
   colortranslator@4.1.0:
     resolution: {integrity: sha512-bwa5awaMnQ6dpm9D3nbsFwUr6x6FrTKmxPdolNtSYfxCNR7ZM93GG1OF5Y3Sy1LvYdalb3riKC9uTn0X5NB36g==}
+
+  comctx@1.1.0:
+    resolution: {integrity: sha512-MRdybNKXOQCXz5hkP0znrCSU7P4mdaUHTWr8fjlTrff87F+uIVTp54m5jt+waomI8X4CyDRI9EkItdolucNVkA==}
 
   commander@2.9.0:
     resolution: {integrity: sha512-bmkUukX8wAOjHdN26xj5c4ctEV22TQ7dQYhSmuckKhToXrkUn0iIaolHdIxYYqD55nhpSPA9zPQ1yP57GdXP2A==}
@@ -3723,6 +3738,9 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  swapy@1.0.5:
+    resolution: {integrity: sha512-XEzy5HCw7yESb7QajKTBJ+NA/BL0kAKlE7XhSMPZawF740X4ws/5CFtXRsVDQ+EztISC759a9+DJM9mxjz4hXg==}
 
   synckit@0.6.2:
     resolution: {integrity: sha512-Vhf+bUa//YSTYKseDiiEuQmhGCoIF3CVBhunm3r/DQnYiGT4JssmnKQc44BIyOZRK2pKjXXAgbhfmbeoC9CJpA==}
@@ -5973,6 +5991,8 @@ snapshots:
   colorette@2.0.20: {}
 
   colortranslator@4.1.0: {}
+
+  comctx@1.1.0: {}
 
   commander@2.9.0:
     dependencies:
@@ -8434,6 +8454,8 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  swapy@1.0.5: {}
 
   synckit@0.6.2:
     dependencies:
