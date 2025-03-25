@@ -1,2 +1,14 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@plugin 'tailwind-scrollbar' {
+    nocompatible: true;
+}
+
+*{
+    @apply scrollbar-thin
+}
+
+html,body{
+    @apply scrollbar-none
+}
