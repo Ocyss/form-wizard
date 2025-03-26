@@ -8,30 +8,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Alert: typeof import('./src/components/MyAlert.vue')['default']
-    Content: typeof import('./src/components/sidepanel/content.vue')['default']
     MyAlert: typeof import('./src/components/MyAlert.vue')['default']
     MyCard: typeof import('./src/components/sidepanel/cards/MyCard.vue')['default']
     MyInput: typeof import('./src/components/MyInput.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Settings: typeof import('./src/components/sidepanel/settings.vue')['default']
     Sidepanel: typeof import('./src/components/sidepanel/index.vue')['default']
     UAlert: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/Alert.vue')['default']
     UApp: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
-    UBadge: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Badge.vue')['default']
     UButton: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/Button.vue')['default']
     UCard: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/Card.vue')['default']
-    UCheckbox: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Checkbox.vue')['default']
-    UForm: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Form.vue')['default']
-    UFormField: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/FormField.vue')['default']
     UIcon: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/vue/components/Icon.vue')['default']
     UInput: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/Input.vue')['default']
     ULinkBase: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue')['default']
-    UPopover: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Popover.vue')['default']
-    URadioGroup: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/RadioGroup.vue')['default']
-    USelect: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Select.vue')['default']
-    USwitch: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.26.10_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6_3cc52365210e4a818a20d77cb00ec9f3/node_modules/@nuxt/ui/dist/runtime/components/Switch.vue')['default']
     UTooltip: typeof import('./node_modules/.pnpm/@nuxt+ui@3.0.1_@babel+parser@7.27.0_embla-carousel@8.5.2_magicast@0.3.5_typescript@5.6._e797bd20670649643f36f6fade6b6816/node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue')['default']
   }
 }

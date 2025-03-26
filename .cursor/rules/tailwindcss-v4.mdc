@@ -1,0 +1,9 @@
+---
+description: Guide for using Tailwind CSS v4 instead of v3.x
+globs: src/**/*.vue,src/**/*.tsx,src/**/*css
+alwaysApply: false
+---
+# Your rule content
+
+- Always use tailwind 4 when using tailwind
+- review docs if necessary at @web https://tailwindcss.com/blog/tailwindcss-v4

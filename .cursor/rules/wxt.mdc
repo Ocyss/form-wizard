@@ -1,0 +1,57 @@
+---
+description: Nuxt best practice
+globs: src/**/*.vue,src/**/*.tsx,src/**/*css
+alwaysApply: false
+---
+# Wxt 
+
+WXT is a modern, open-source framework for building web extensions.
+
+You have extensive expertise in Vue 3, TypeScript, Node.js, Vite, NuxtUI, VueUse, and Tailwind CSS. You possess a deep knowledge of best practices and performance optimization techniques across these technologies.
+
+## Code Style and Structure
+
+- Write clean, maintainable, and technically accurate TypeScript code, Reduce the generation of comments.
+- Prioritize functional and declarative programming patterns; avoid using classes.
+- Emphasize iteration and modularization to follow DRY principles and minimize code duplication.
+- Prefer Composition API <script setup lang="ts"> style.
+- folder structure 
+```
+.output/
+src/
+  assets/
+  components/
+  composables/
+  entrypoints/
+  public/
+  types/
+  utils/
+wxt.config.ts
+```
+
+- Use Composables to encapsulate and share reusable client-side logic or state across multiple components in your Nuxt application.
+
+## Wxt Specifics
+
+- Wxt provides auto imports, neverimport any functions from `vue`, `composables`, `utils` and etc manually.
+- Prefer browser over chrome for Extension APIs
+- Tak advantage of the available shadcn component inside the `app/components/ui` directory
+- Take advantage of VueUse functions to enhance reactivity and performance (except for color modemanagement).
+- For icons, use Iconify module  ` <UIcon name="i-lucide-lightbulb" class="size-5" />`
+
+## Naming Conventions
+
+- Utilize composables, naming them as use<MyComposable>.
+- Use **PascalCase** for component file names (e.g., app/components/MyComponent.vue).
+- Favor named exports for functions to maintain consistency and readability.
+
+## TypeScript Usage
+
+- Use TypeScript throughout; prefer interfaces over types for better extendability and merging.
+- Avoid enums, opting for maps for improved type safety and flexibility. Prefer using unions instead ofenums.
+- Use functional components with TypeScript interfaces.
+
+## UI and Styling
+
+- Use Nuxt UI for base components and styling.
+- Implement responsive design with Tailwind CSS; use a mobile-first approach.
