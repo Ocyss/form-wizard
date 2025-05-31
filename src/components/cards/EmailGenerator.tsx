@@ -1,9 +1,6 @@
 import type { FormError, FormSubmitEvent } from '@nuxt/ui'
 import type { SlotItemMapArray, Swapy } from 'swapy'
-import MyInput from '@/components/MyInput.vue'
-import { EmailType, useEmail } from '@/composables/useEmail'
-import { useTab } from '@/composables/useTab'
-import { copyToClipboard } from '@/utils/copy'
+import type { Card } from '@/composables/useCards'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UCard from '@nuxt/ui/components/Card.vue'
@@ -17,8 +14,11 @@ import USelect from '@nuxt/ui/components/Select.vue'
 import USwitch from '@nuxt/ui/components/Switch.vue'
 import UIcon from '@nuxt/ui/runtime/vue/components/Icon.vue'
 import { createSwapy, utils } from 'swapy'
-import { reactive } from 'vue'
-import MyCard from './MyCard.vue'
+import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import MyCard from '@/components/MyCard.vue'
+import MyInput from '@/components/MyInput.vue'
+import { useStore } from '@/composables/useStore'
+import { useTab } from '@/composables/useTab'
 
 function EmailEmpty() {
   return (
@@ -35,6 +35,57 @@ function EmailEmpty() {
       </p>
     </div>
   )
+}
+
+export enum EmailType {
+  DOMAIN = 'domain',
+  ALIAS = 'alias',
+}
+
+export namespace EmailType {
+  export const radioItems: { label: string, value: EmailType }[] = [
+    {
+      label: '域名邮箱',
+      value: EmailType.DOMAIN,
+    },
+    {
+      label: '别名邮箱',
+      value: EmailType.ALIAS,
+    },
+  ]
+
+  export function getLabel(type: EmailType) {
+    return type === EmailType.DOMAIN ? '域名邮箱' : '别名邮箱'
+  }
+
+  export function getColor(type: EmailType) {
+    return type === EmailType.DOMAIN ? 'primary' : 'info'
+  }
+}
+
+export interface Email {
+  id: string
+  value: string
+  type: EmailType
+  active: boolean
+}
+
+const emailsRef = useStore<Email[]>('card/emails', [])
+
+export function useEmail() {
+  const initEmails = async () => {
+    await emailsRef.init()
+    return emailsRef.value
+  }
+  const setEmails = async (emails: Email[]) => {
+    await emailsRef.set(emails)
+  }
+  return {
+    emails: emailsRef,
+    initEmails,
+    getEmails: initEmails,
+    setEmails,
+  }
 }
 
 const EmailGeneratorSettings = defineComponent(async () => {
@@ -168,149 +219,149 @@ const EmailGeneratorSettings = defineComponent(async () => {
     emailsEdit.value = false
   }
   return () => (
-    <>
-      <div class="p-4 space-y-6">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold">邮箱设置</h2>
-          <UPopover>
-            {{
-              default() {
-                return (
-                  <UButton
-                    label="Open"
-                    icon="i-heroicons-plus"
-                    color="primary"
-                    variant="soft"
-                  >
-                    添加邮箱
-                  </UButton>
-                )
-              },
-              content() {
-                return (
-                  <UCard>
-                    {{
-                      header() {
-                        return (
-                          <div class="flex items-center justify-between">
-                            <h3 class="text-base font-semibold">添加新邮箱</h3>
+
+    <div class="p-4 space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold">邮箱设置</h2>
+        <UPopover>
+          {{
+            default() {
+              return (
+                <UButton
+                  label="Open"
+                  icon="i-heroicons-plus"
+                  color="primary"
+                  variant="soft"
+                >
+                  添加邮箱
+                </UButton>
+              )
+            },
+            content() {
+              return (
+                <UCard>
+                  {{
+                    header() {
+                      return (
+                        <div class="flex items-center justify-between">
+                          <h3 class="text-base font-semibold">添加新邮箱</h3>
+                        </div>
+                      )
+                    },
+                    default() {
+                      return (
+                        <UForm
+                          validate={validateEmail}
+                          state={newEmail}
+                          class="space-y-4"
+                          onSubmit={addEmail}
+                        >
+                          <UFormField label="邮箱类型" name="type">
+                            <URadioGroup
+                              v-model={newEmail.type}
+                              orientation="horizontal"
+                              class="mt-1"
+                              items={EmailType.radioItems}
+                            />
+                          </UFormField>
+
+                          <UFormField label="邮箱地址" name="value">
+                            <UInput
+                              v-model={newEmail.value}
+                              placeholder={
+                                newEmail.type === EmailType.DOMAIN
+                                  ? '@example.com'
+                                  : 'user@example.com'
+                              }
+                            />
+                          </UFormField>
+                          <div class="flex justify-end">
+                            <UButton color="primary" type="submit">
+
+                              添加
+
+                            </UButton>
                           </div>
-                        )
-                      },
-                      default() {
-                        return (
-                          <UForm
-                            validate={validateEmail}
-                            state={newEmail}
-                            class="space-y-4"
-                            onSubmit={addEmail}
-                          >
-                            <UFormField label="邮箱类型" name="type">
-                              <URadioGroup
-                                v-model={newEmail.type}
-                                orientation="horizontal"
-                                class="mt-1"
-                                items={EmailType.radioItems}
-                              />
-                            </UFormField>
-
-                            <UFormField label="邮箱地址" name="value">
-                              <UInput
-                                v-model={newEmail.value}
-                                placeholder={
-                                  newEmail.type === EmailType.DOMAIN
-                                    ? '@example.com'
-                                    : 'user@example.com'
-                                }
-                              />
-                            </UFormField>
-                            <div class="flex justify-end">
-                              <UButton color="primary" type="submit">
-                                {' '}
-                                添加
-                                {' '}
-                              </UButton>
-                            </div>
-                          </UForm>
-                        )
-                      },
-                    }}
-                  </UCard>
-                )
-              },
-            }}
-          </UPopover>
-        </div>
-        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            添加邮箱后，插件将根据当前网站URL自动生成对应的Catch-all邮箱地址，用于溯源和个性化。
-          </p>
-        </div>
-
-        <div
-          ref={emailsContainer}
-          class={['space-y-3', emails.value.length > 0 ? 'block' : 'hidden']}
-        >
-          {emailsSlottedItems.value.map(({ slotId, itemId, item: email }) => (
-            <div
-              class="rounded-[calc(var(--ui-radius)*2)] ring ring-(--ui-border) divide-y divide-(--ui-border) relative select-none"
-              v-for="{ slotId, itemId, item: email } in emailsSlottedItems"
-              key={slotId}
-              data-swapy-slot={slotId}
-            >
-              {email
-                ? (
-                    <div
-                      class="flex items-center justify-between py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
-                      data-swapy-item={itemId}
-                      key={itemId}
-                    >
-                      <div class="flex items-center space-x-3">
-                        <UBadge
-                          color={EmailType.getColor(email.type)}
-                          variant="subtle"
-                          size="sm"
-                        >
-                          {EmailType.getLabel(email.type)}
-                        </UBadge>
-                        <span
-                          data-swapy-no-drag
-                          class="font-mono text-base select-text"
-                        >
-                          {email.value}
-                        </span>
-                      </div>
-                      <div data-swapy-no-drag class="flex items-center space-x-2">
-                        <USwitch
-                          model-value={email.active}
-                          onChange={() => toggleEmailStatus(email)}
-                        />
-                        <UButton
-                          color="neutral"
-                          variant="ghost"
-                          icon="i-heroicons-trash"
-                          size="xs"
-                          onClick={() => removeEmail(email)}
-                        />
-                      </div>
-                    </div>
-                  )
-                : (
-                    <div></div>
-                  )}
-            </div>
-          ))}
-        </div>
-        {emails.value.length === 0 && EmailEmpty()}
-        <div class="flex justify-end">
-          {emailsEdit.value && (
-            <UButton color="primary" onClick={saveEmails}>
-              保存
-            </UButton>
-          )}
-        </div>
+                        </UForm>
+                      )
+                    },
+                  }}
+                </UCard>
+              )
+            },
+          }}
+        </UPopover>
       </div>
-    </>
+      <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          添加邮箱后，插件将根据当前网站URL自动生成对应的Catch-all邮箱地址，用于溯源和个性化。
+        </p>
+      </div>
+
+      <div
+        ref={emailsContainer}
+        class={['space-y-3', emails.value.length > 0 ? 'block' : 'hidden']}
+      >
+        {emailsSlottedItems.value.map(({ slotId, itemId, item: email }) => (
+          <div
+            class="rounded-[calc(var(--ui-radius)*2)] ring ring-(--ui-border) divide-y divide-(--ui-border) relative select-none"
+            v-for="{ slotId, itemId, item: email } in emailsSlottedItems"
+            key={slotId}
+            data-swapy-slot={slotId}
+          >
+            {email
+              ? (
+                  <div
+                    class="flex items-center justify-between py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
+                    data-swapy-item={itemId}
+                    key={itemId}
+                  >
+                    <div class="flex items-center space-x-3">
+                      <UBadge
+                        color={EmailType.getColor(email.type)}
+                        variant="subtle"
+                        size="sm"
+                      >
+                        {EmailType.getLabel(email.type)}
+                      </UBadge>
+                      <span
+                        data-swapy-no-drag
+                        class="font-mono text-base select-text"
+                      >
+                        {email.value}
+                      </span>
+                    </div>
+                    <div data-swapy-no-drag class="flex items-center space-x-2">
+                      <USwitch
+                        model-value={email.active}
+                        onChange={() => toggleEmailStatus(email)}
+                      />
+                      <UButton
+                        color="neutral"
+                        variant="ghost"
+                        icon="i-heroicons-trash"
+                        size="xs"
+                        onClick={() => removeEmail(email)}
+                      />
+                    </div>
+                  </div>
+                )
+              : (
+                  <div></div>
+                )}
+          </div>
+        ))}
+      </div>
+      {emails.value.length === 0 && EmailEmpty()}
+      <div class="flex justify-end">
+        {emailsEdit.value && (
+          <UButton color="primary" onClick={saveEmails}>
+            保存
+          </UButton>
+        )}
+      </div>
+    </div>
+
   )
 })
 
@@ -404,11 +455,15 @@ export default function (): Card {
                   <div class="flex items-center gap-1">
                     <USelect
                       v-model={selectedEmail.value}
-                      items={emails.value}
+                      items={emails.value.map(email => ({
+                        id: email.id,
+                        label: email.value,
+                      }))}
                       value-key="id"
-                      label-key="value"
+                      label-key="label"
                       placeholder="选择邮箱"
                       size="sm"
+                      class="w-40"
                     />
                     <UDrawer
                       handle-only

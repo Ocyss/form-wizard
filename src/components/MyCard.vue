@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+import { useCards } from '@/composables/useCards'
+
 const props = defineProps<{
   info: {
     title: string

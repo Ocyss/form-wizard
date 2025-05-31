@@ -1,4 +1,5 @@
 import type { Adapter, Message, OnMessage, SendMessage } from 'comctx'
+import { browser, defineContentScript } from '#imports'
 import { provideFormService } from '@/service/formService'
 
 class ProvideAdapter implements Adapter {

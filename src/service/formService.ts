@@ -1,5 +1,5 @@
-import { uid } from '@/utils/id'
 import { defineProxy } from 'comctx'
+import { uid } from '@/utils/id'
 
 function queryFormItemDescription(form: Form, item: HTMLElement) {
   const parent = item.parentElement

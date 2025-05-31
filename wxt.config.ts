@@ -1,10 +1,9 @@
 import ui from '@nuxt/ui/vite'
-import vueJsx from '@vitejs/plugin-vue-jsx'
+import VueJsx from '@vitejs/plugin-vue-jsx'
 import { defineConfig } from 'wxt'
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  extensionApi: 'chrome',
   srcDir: 'src',
   modules: ['@wxt-dev/module-vue'],
   manifest: {
@@ -14,10 +13,18 @@ export default defineConfig({
     permissions: ['storage', 'sidePanel', 'activeTab', 'scripting'],
     host_permissions: ['http://*/*', 'https://*/*'],
   },
+  imports: false,
+  outDirTemplate: '{{browser}}-mv{{manifestVersion}}',
   vite: () => ({
     plugins: [
-      vueJsx(),
+      VueJsx(),
       ui({
+        autoImport: {
+          dts: 'src/auto-imports.d.ts',
+        },
+        components: {
+          dts: 'src/components.d.ts',
+        },
         ui: {
           colors: {
             primary: 'purple',

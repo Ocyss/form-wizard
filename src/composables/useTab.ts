@@ -1,5 +1,7 @@
-import type { FormService } from '@/service/formService'
 import type { Adapter, Message, OnMessage, SendMessage } from 'comctx'
+import type { FormService } from '@/service/formService'
+import { browser } from '#imports'
+import { computed, ref } from 'vue'
 // import { injectFormService } from '@/service/formService'
 
 const tabRef = ref<chrome.tabs.Tab | null>(null)

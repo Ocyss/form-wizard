@@ -1,0 +1,114 @@
+---
+description: Nuxt best practice
+globs: src/**/*.vue,src/**/*.tsx
+alwaysApply: false
+---
+# Nuxt 
+
+You have extensive expertise in Vue 3, Nuxt 3, TypeScript, Node.js, Vite, NuxtUI, VueUse, and Tailwind CSS. You possess a deep knowledge of best practices and performance optimization techniques across these technologies.
+
+## Code Style and Structure
+
+- Write clean, maintainable, and technically accurate TypeScript code, Reduce the generation of comments.
+- Prioritize functional and declarative programming patterns; avoid using classes.
+- Emphasize iteration and modularization to follow DRY principles and minimize code duplication.
+- Prefer Composition API <script setup lang="ts"> style.
+- Use the v4 folder structure 
+```
+.output/
+src/
+  assets/
+  components/
+  composables/
+  utils/
+public/
+```
+
+- Use Composables to encapsulate and share reusable client-side logic or state across multiple components in your Nuxt application.
+
+## Nuxt 3 Specifics
+
+- Nuxt 3 provides auto imports, neverimport any functions from `vue`, `composables`, `utils` and etc manually.
+- Tak advantage of the available shadcn component inside the `app/components/ui` directory
+- Take advantage of VueUse functions to enhance reactivity and performance (except for color modemanagement).
+- For SEO useSeoMeta to set the title, description, and other meta tags.
+- For icons, use Iconify module  ` <UIcon name="i-lucide-lightbulb" class="size-5" />`
+- use app.config.ts for app theme configuration.
+
+## Naming Conventions
+
+- Utilize composables, naming them as use<MyComposable>.
+- Use **PascalCase** for component file names (e.g., app/components/MyComponent.vue).
+- Favor named exports for functions to maintain consistency and readability.
+
+## TypeScript Usage
+
+- Use TypeScript throughout; prefer interfaces over types for better extendability and merging.
+- Avoid enums, opting for maps for improved type safety and flexibility. Prefer using unions instead ofenums.
+- Use functional components with TypeScript interfaces.
+
+## UI and Styling
+
+- 使用 Nuxt UI 作为基础组件和样式系统。
+- 使用 Tailwind CSS v4 实现响应式设计；采用移动优先的方法。
+- 优先使用 Tailwind CSS 类，而不是单独的 style 块。
+- 使用主题颜色变量而非硬编码颜色值。
+
+### 主题颜色系统
+
+颜色别名：
+- primary: 主品牌颜色，用作组件的默认颜色。
+- secondary: 补充主颜色的次要颜色。
+- success: 用于成功状态。
+- info: 用于信息状态。
+- warning: 用于警告状态。
+- error: 用于表单错误验证状态。
+- neutral: 用于背景、文本等的中性颜色。
+
+### 背景颜色使用规范
+
+优先使用以下预定义的背景颜色变量：
+- `--ui-bg`: 主背景颜色
+- `--ui-bg-muted`: 柔和背景
+- `--ui-bg-elevated`: 轻微凸显的背景
+- `--ui-bg-accented`: 更突出的背景
+- `--ui-bg-inverted`: 反转背景颜色
+
+### 最佳实践示例
+
+- Nuxt UI 的组件 color 属性只能传入theme color，不能传入具体颜色名。
+- class 变量使用 Tailwind v4 语法, `bg-(--ui-bg)`, 而不是 `bg-[var(--ui-bg)]`
+- Tailwind Class 复用较多,比较复杂,class很多等情况可使用 @apply 写法, 需要有合适的ClassName
+
+✅ 正确用法：
+```vue
+<template>
+  <UButton color="primary">按钮</UButton>
+  <div class="bg-(--ui-bg-muted) text-(--ui-primary)">使用主题变量</div>
+  <div v-for="i in 10" class="card">使用@apply</div>
+</template>
+
+<style scoped>
+.card {
+  @apply bg-(--ui-bg-muted) text-(--ui-primary);
+}
+</style>
+```
+
+❌ 避免用法：
+```vue
+<template>
+  <UButton color="green">不要使用具体颜色名</UButton>
+  <div class="bg-[var(--ui-bg-muted)] text-[var(--ui-primary)]">不要使用Tailwind v3语法</div>
+  <div class="bg-green-500 text-blue-700">不要硬编码颜色值</div>
+  <div style="background-color: #f3f4f6;">避免使用内联样式</div>
+  <div class="card">避免使用class传统写法</div>
+</template>
+
+<style scoped>
+.card {
+  background-color: var(--ui-color-primary);
+}
+</style>
+```
+

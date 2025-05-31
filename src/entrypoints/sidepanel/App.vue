@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Index from '@/components/sidepanel/index.vue'
 import { zh_cn } from '@nuxt/ui/locale'
+import Index from '@/components/sidepanel/index.vue'
 </script>
 
 <template>

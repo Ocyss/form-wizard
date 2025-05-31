@@ -8,6 +8,7 @@ import UCalendar from "@nuxt/ui/components/Calendar.vue";
 import UTextarea from "@nuxt/ui/components/Textarea.vue";
 import USlider from "@nuxt/ui/components/Slider.vue";
 import UFormField from "@nuxt/ui/components/FormField.vue";
+
 import MyInput from "@/components/MyInput.vue";
 import {
   mainnetClient,
@@ -16,7 +17,7 @@ import {
   timelockDecrypt,
   timelockEncrypt,
 } from "tlock-js";
-import MyCard from "./MyCard.vue";
+import MyCard from "@/components/MyCard.vue";
 import { Buffer } from "buffer";
 import {
   CalendarDate,
@@ -24,6 +25,7 @@ import {
   getLocalTimeZone,
 } from "@internationalized/date";
 import MyAlert from "@/components/MyAlert.vue";
+import { defineComponent, ref } from "vue";
 
 const client = mainnetClient();
 

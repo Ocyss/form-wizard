@@ -1,10 +1,11 @@
 <script lang="tsx" setup>
 import type { SlotItemMapArray, Swapy } from 'swapy'
-import { useCards } from '@/composables/useCards'
-import { useTab } from '@/composables/useTab'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UCard from '@nuxt/ui/components/Card.vue'
 import { utils } from 'swapy'
+import { computed, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { useCards } from '@/composables/useCards'
+import { useTab } from '@/composables/useTab'
 
 const { cards, cardMap, unusedCards, addCard, initCards, saveCards, editState: cardEditState } = useCards()
 

@@ -1,7 +1,10 @@
 import type { DefineSetupFnComponent } from 'vue'
-import EmailGenerator from '@/components/sidepanel/cards/EmailGenerator'
-import PasswordGenerator from '@/components/sidepanel/cards/PasswordGenerator'
-import TimeCapsuleVault from '@/components/sidepanel/cards/TimeCapsuleVault'
+import { computed, ref } from 'vue'
+import AddressAssistant from '@/components/cards/AddressAssistant'
+import EmailGenerator from '@/components/cards/EmailGenerator'
+import PasswordGenerator from '@/components/cards/PasswordGenerator'
+import TimeCapsuleVault from '@/components/cards/TimeCapsuleVault'
+import { useStore } from './useStore'
 
 export interface CardInfo {
   key: string
@@ -16,10 +19,12 @@ export interface Card extends CardInfo {
 }
 
 const cardsComponents: Card[] = [
+  AddressAssistant(),
   EmailGenerator(),
   PasswordGenerator(),
   TimeCapsuleVault(),
 ]
+
 const editState = ref(false)
 
 const cardMap = cardsComponents.reduce((acc, card) => {
@@ -32,7 +37,7 @@ interface CardState {
   isTemp?: boolean
 }
 
-const cardsRef = ref<CardState[]>([])
+const cardsRef = useStore<CardState[]>('cards', [])
 
 const usedCards = computed(() => {
   return cardsComponents.filter(card => cardsRef.value.some(ref => ref.key === card.key))
@@ -45,14 +50,11 @@ const unusedCards = computed(() => {
   })
 })
 
-const cardsKey = 'local:cards'
-
 export function useCards() {
   async function initCards() {
     editState.value = false
-    const cards = await storage.getItem<CardState[]>(cardsKey, { fallback: [{ key: 'EmailGenerator' }, { key: 'PasswordGenerator' }] })
-    cardsRef.value = cards
-    return cards
+    await cardsRef.init()
+    return cardsRef.value
   }
 
   function deleteCard(key: string, isEdit = false) {
@@ -76,7 +78,9 @@ export function useCards() {
   }
 
   async function saveCards() {
-    await storage.setItem(cardsKey, jsonClone(cardsRef.value).filter(ref => !ref.isTemp))
+    await cardsRef.save((v) => {
+      return v.filter(ref => !ref.isTemp)
+    })
     editState.value = false
   }
 
