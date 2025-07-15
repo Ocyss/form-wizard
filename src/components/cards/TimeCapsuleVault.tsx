@@ -2,13 +2,11 @@ import type { ChainInfo } from "tlock-js";
 import { copyToClipboard } from "@/utils/copy";
 import UButton from "@nuxt/ui/components/Button.vue";
 import UCheckbox from "@nuxt/ui/components/Checkbox.vue";
-import UInput from "@nuxt/ui/components/Input.vue";
 import UPopover from "@nuxt/ui/components/Popover.vue";
 import UCalendar from "@nuxt/ui/components/Calendar.vue";
 import UTextarea from "@nuxt/ui/components/Textarea.vue";
 import USlider from "@nuxt/ui/components/Slider.vue";
 import UFormField from "@nuxt/ui/components/FormField.vue";
-
 import MyInput from "@/components/MyInput.vue";
 import {
   mainnetClient,
@@ -25,7 +23,13 @@ import {
   getLocalTimeZone,
 } from "@internationalized/date";
 import MyAlert from "@/components/MyAlert.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
+import { useStore } from "@/composables/useStore";
+import {
+  usePasswordGenerator,
+  PASSWORD_CHARSETS,
+  PasswordOptions,
+} from "@/composables/usePasswordGenerator";
 
 const client = mainnetClient();
 
@@ -81,29 +85,7 @@ function localisedDecryptionMessageOrDefault(
   return timeToDecryption;
 }
 
-// 生成随机密码
-function generatePassword(
-  length: number,
-  includeNumbers: boolean,
-  includeUppercase: boolean,
-  includeLowercase: boolean,
-  includeSpecial: boolean,
-): string {
-  let charset = "";
-
-  if (includeSpecial) charset += "!@#.^&*";
-  if (includeNumbers) charset += "0123456789";
-  if (includeUppercase) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  if (includeLowercase || charset === "")
-    charset += "abcdefghijklmnopqrstuvwxyz";
-
-  let password = "";
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    password += charset[randomIndex];
-  }
-  return password;
-}
+// 使用可复用的密码生成器
 
 function getPresetDates() {
   const now = new Date();
@@ -120,19 +102,15 @@ function getPresetDates() {
   };
   return (
     [
-      ["明天", current.add({ days: 1 })],
       ["下周", current.add({ days: 7 })],
       ["下个月", current.add({ months: 1 })],
       ["三个月", current.add({ months: 3 })],
       ["半年", current.add({ months: 6 })],
       ["一年", current.add({ years: 1 })],
-      ["两年半", current.add({ years: 2, months: 6 })],
       ["三年", current.add({ years: 3 })],
       ["元旦", getNextYearDate(1, 1)],
       ["劳动节", getNextYearDate(5, 1)],
-      ["儿童节", getNextYearDate(6, 1)],
       ["国庆节", getNextYearDate(10, 1)],
-      ["圣诞节", getNextYearDate(12, 25)],
     ] as [string, CalendarDate][]
   ).sort((a, b) => a[1].compare(b[1]));
 }
@@ -153,21 +131,30 @@ export default function () {
         const ciphertext = ref("");
         const decryptResult = ref("");
         const isLoading = ref(false);
-        const passwordShow = ref(false);
         const errorMessage = ref("");
         const decryptionDate = ref<Date | null>(null);
+        const passwordOptions = useStore<PasswordOptions>(
+          "timeCapsule/passwordOptions",
+          {
+            length: 4,
+            numbers: true,
+            uppercase: false,
+            lowercase: false,
+            special: false,
+          },
+          {
+            autoSave: true,
+          },
+        );
 
-        const passwordLength = ref(12);
-        const includeNumbers = ref(true);
-        const includeUppercase = ref(true);
-        const includeLowercase = ref(true);
-        const includeSpecial = ref(true);
         const now = new Date();
+
         const minSelectedDate = new CalendarDate(
           now.getFullYear(),
           now.getMonth() + 1,
           now.getDate(),
         );
+
         const selectedDate = ref(minSelectedDate.add({ days: 1 }));
 
         const df = new DateFormatter("zh-CN", {
@@ -176,21 +163,10 @@ export default function () {
 
         const presetDates = getPresetDates();
 
-        const generateNewPassword = () => {
-          password.value = generatePassword(
-            passwordLength.value,
-            includeNumbers.value,
-            includeUppercase.value,
-            includeLowercase.value,
-            includeSpecial.value,
-          );
-        };
-
         const encryptPassword = async () => {
-          if (!password.value) {
-            errorMessage.value = "请输入密码";
-            return;
-          }
+          const { generatePassword } = usePasswordGenerator();
+
+          password.value = generatePassword(passwordOptions.value);
 
           try {
             isLoading.value = true;
@@ -252,6 +228,10 @@ export default function () {
             ciphertext.value = "";
           }
         };
+
+        onMounted(() => {
+          passwordOptions.init();
+        });
 
         return () => (
           <MyCard info={info} editState={props.editState}>
@@ -398,94 +378,38 @@ export default function () {
                           </div>
                         ) : (
                           <>
-                            <UFormField label="密码" required>
-                              <UInput
-                                class="w-full"
-                                v-model={password.value}
-                                placeholder="输入或生成密码"
-                                type={passwordShow.value ? "text" : "password"}
-                                color="primary"
-                                ui={{ trailing: "pe-1" }}
-                                aria-describedby="password-strength"
-                              >
-                                {{
-                                  trailing: () => {
-                                    return (
-                                      <UButton
-                                        color="neutral"
-                                        variant="link"
-                                        size="sm"
-                                        icon={
-                                          passwordShow.value
-                                            ? "i-lucide-eye-off"
-                                            : "i-lucide-eye"
-                                        }
-                                        aria-label={
-                                          passwordShow.value
-                                            ? "Hide password"
-                                            : "Show password"
-                                        }
-                                        aria-pressed={passwordShow.value}
-                                        aria-controls="password"
-                                        onClick={() => {
-                                          passwordShow.value =
-                                            !passwordShow.value;
-                                        }}
-                                      />
-                                    );
-                                  },
-                                }}
-                              </UInput>
-                            </UFormField>
-
                             <div class="space-y-3">
                               <UFormField
-                                label={`密码长度: ${passwordLength.value}`}
+                                label={`密码长度: ${passwordOptions.value.length}`}
                                 size="xs"
                               >
                                 <USlider
                                   min={4}
                                   max={22}
-                                  v-model={passwordLength.value}
+                                  v-model={passwordOptions.value.length}
                                 />
                               </UFormField>
                               <div class="flex flex-wrap gap-4">
-                                <UCheckbox
-                                  v-model={includeNumbers.value}
-                                  label="0-9"
-                                  size="xs"
-                                />
-                                <UCheckbox
-                                  v-model={includeUppercase.value}
-                                  label="A-Z"
-                                  size="xs"
-                                />
-                                <UCheckbox
-                                  v-model={includeLowercase.value}
-                                  label="a-z"
-                                  size="xs"
-                                />
-                                <UCheckbox
-                                  v-model={includeSpecial.value}
-                                  label="!@#.^&*"
-                                  size="xs"
-                                />
+                                {Object.entries(PASSWORD_CHARSETS).map(
+                                  ([key, val]) => (
+                                    <UCheckbox
+                                      v-model={
+                                        passwordOptions.value[
+                                          key as keyof typeof passwordOptions.value
+                                        ]
+                                      }
+                                      label={val.label}
+                                      size="sm"
+                                    />
+                                  ),
+                                )}
                               </div>
-                              <div class="flex gap-2">
-                                <UButton
-                                  color="primary"
-                                  variant="solid"
-                                  icon="i-lucide-refresh-cw"
-                                  label="生成密码"
-                                  onClick={generateNewPassword}
-                                  class="flex-1"
-                                  size="sm"
-                                />
+                              <div class="flex justify-end">
                                 <UButton
                                   color="primary"
                                   variant="solid"
                                   icon="i-lucide-lock"
-                                  label="加密"
+                                  label="生成密码和密文"
                                   loading={isLoading.value}
                                   onClick={encryptPassword}
                                   class="flex-1"

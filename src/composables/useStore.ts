@@ -13,7 +13,9 @@ function formatKey(key: string): StorageItemKey {
   return key as StorageItemKey
 }
 
-export function useStore<T>(key: string | StorageItemKey, defaultData: T) {
+export function useStore<T>(key: string | StorageItemKey, defaultData: T, _: {
+  autoSave?: boolean // TODO: 自动保存
+} = {}) {
   const storageKey = formatKey(key)
   const data = ref(defaultData)
   const { cloned, sync, isModified } = useCloned<T>(data as Ref<T>, { manual: true })
