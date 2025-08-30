@@ -18,7 +18,7 @@ const cardState = computed(() => {
 </script>
 
 <template>
-  <UCard class="relative">
+  <UCard class="relative" :ui="{ root: 'overflow-visible' }">
     <template #header>
       <div data-swapy-handle class="flex items-center justify-between">
         <div class="text-lg font-medium flex-1">

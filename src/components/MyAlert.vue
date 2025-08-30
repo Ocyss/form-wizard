@@ -2,7 +2,10 @@
 import type { AlertProps } from '@nuxt/ui'
 import { tv } from 'tailwind-variants'
 
-const props = withDefaults(defineProps<AlertProps>(), {
+interface Props extends /* @vue-ignore */ AlertProps {
+}
+
+const props = withDefaults(defineProps<Props>(), {
   color: 'primary',
 })
 

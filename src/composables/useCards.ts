@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import AddressAssistant from '@/components/cards/AddressAssistant'
 import EmailGenerator from '@/components/cards/EmailGenerator'
 import PasswordGenerator from '@/components/cards/PasswordGenerator'
+import RealAddressGenerator from '@/components/cards/RealAddressGenerator'
 import TimeCapsuleVault from '@/components/cards/TimeCapsuleVault'
 import { useStore } from './useStore'
 
@@ -22,6 +23,7 @@ const cardsComponents: Card[] = [
   AddressAssistant(),
   EmailGenerator(),
   PasswordGenerator(),
+  RealAddressGenerator(),
   TimeCapsuleVault(),
 ]
 

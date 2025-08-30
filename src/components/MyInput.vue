@@ -1,18 +1,20 @@
 <script lang="ts" setup>
-import type { InputProps, TextareaProps } from '@nuxt/ui'
+import type { InputProps as UInputProps, TextareaProps as UTextareaProps } from '@nuxt/ui'
+
+interface TextareaProps extends /* @vue-ignore */ UTextareaProps {
+  copyable?: boolean
+  readonly?: boolean
+  isArea: true
+}
+
+interface InputProps extends /* @vue-ignore */ UInputProps {
+  copyable?: boolean
+  readonly?: boolean
+  isArea: false
+}
 
 const props = withDefaults(
-  defineProps<
-    (InputProps & {
-      copyable?: boolean
-      readonly?: boolean
-      isArea?: false
-    }) | (TextareaProps & {
-      copyable?: boolean
-      readonly?: boolean
-      isArea: true
-    })
-  >(),
+  defineProps<InputProps | TextareaProps>(),
   {},
 )
 const emit = defineEmits<{

@@ -29,6 +29,7 @@ watch(
     ),
   { deep: true },
 )
+
 const slottedItems = computed(() =>
   utils.toSlottedItems(cards.value, 'key', slotItemMap.value),
 )

@@ -6,12 +6,12 @@ import UFormField from '@nuxt/ui/components/FormField.vue'
 import UInput from '@nuxt/ui/components/Input.vue'
 import UInputNumber from '@nuxt/ui/components/InputNumber.vue'
 import USelect from '@nuxt/ui/components/Select.vue'
+import USlider from '@nuxt/ui/components/Slider.vue'
 import UTextarea from '@nuxt/ui/components/Textarea.vue'
 import UIcon from '@nuxt/ui/runtime/vue/components/Icon.vue'
 import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 import MyCard from '@/components/MyCard.vue'
 import MyInput from '@/components/MyInput.vue'
-import MySlider from '@/components/MySlider.vue'
 import { useStore } from '@/composables/useStore'
 
 interface Address {
@@ -32,6 +32,8 @@ const levels = useStore<Record<string, string>>('address/levels', {
 })
 
 const addresses = useStore<Address[]>('address/addresses', [])
+
+const selectedWeight = useStore<number>('address/selectedWeight', 4)
 
 function extractAddressParts(inputs: Record<string, string>, fullAddress: string) {
   const addressParts: [number, string][] = []
@@ -72,7 +74,7 @@ function extractAddressParts(inputs: Record<string, string>, fullAddress: string
     remainingAddress = remainingAddress.slice(streetMatch[1].length)
   }
   let communityPart = ''
-  const communityKeywords = ['小区', '花园', '广场', '大厦', '苑', '庄', '村', '院', '城', '园']
+  const communityKeywords = ['小区', '花园', '广场', '大厦', '苑', '庄', '村', '院', '城', '园', '府']
   let foundCommunity = false
 
   for (const keyword of communityKeywords) {
@@ -453,14 +455,12 @@ const AddressDisplay = defineComponent(async () => {
     return Object.entries(levels.value).sort((a, b) => Number(b[0]) - Number(a[0]))
   })
 
-  const availableWeights = computed(() => {
-    return Object.keys(levels.value).map(Number).sort((a, b) => b - a)
-  })
-
-  const currentWeight = ref(availableWeights.value[2] || 40)
-
   const selectedAddress = computed(() => {
     return addresses.value.find(addr => addr.id === selectedAddressId.value) || addresses.value[0]
+  })
+
+  const currentLevelName = computed(() => {
+    return sortedLevels.value[selectedWeight.value]?.[1] || 'unknown'
   })
 
   const displayAddress = computed(() => {
@@ -471,8 +471,10 @@ const AddressDisplay = defineComponent(async () => {
     let address = ''
     const sortedWeights = Object.keys(selectedAddress.value.levels).map(Number).sort((a, b) => b - a)
 
+    const selected = Number(sortedLevels.value[selectedWeight.value]?.[0])
+
     for (const weight of sortedWeights) {
-      if (weight <= currentWeight.value) {
+      if (weight <= selected) {
         address = selectedAddress.value.levels[weight.toString()] || ''
         break
       }
@@ -484,14 +486,12 @@ const AddressDisplay = defineComponent(async () => {
     }
   })
 
-  const currentLevelName = computed(() => {
-    const level = sortedLevels.value.find(([weight]) => Number(weight) === currentWeight.value)
-    return level?.[1] || '自定义'
-  })
-
   onMounted(() => {
     if (addresses.value.length > 0) {
       selectedAddressId.value = addresses.value[0].id
+    }
+    if (selectedWeight.value >= sortedLevels.value.length) {
+      selectedWeight.value = sortedLevels.value.length - 1
     }
   })
 
@@ -515,21 +515,14 @@ const AddressDisplay = defineComponent(async () => {
               )}
 
               <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-500">
-                    级别:
-                    {currentLevelName.value}
-                  </span>
-                  <span class="text-sm text-gray-500">
-                    权重:
-                    {currentWeight.value}
-                  </span>
-                </div>
-
-                <MySlider
-                  modelValue={currentWeight.value}
-                  options={availableWeights.value}
-                  onUpdate:modelValue={(value: number) => { currentWeight.value = value }}
+                <USlider
+                  max={sortedLevels.value.length - 1}
+                  v-model={selectedWeight.value}
+                  tooltip={{
+                    text: currentLevelName.value,
+                    content: { side: 'top', sideOffset: 16, updatePositionStrategy: 'always' },
+                  }}
+                  onChange={async () => selectedWeight.save()}
                 />
               </div>
 

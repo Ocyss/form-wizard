@@ -312,38 +312,37 @@ const EmailGeneratorSettings = defineComponent(async () => {
             {email
               ? (
                   <div
-                    class="flex items-center justify-between py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
+                    class="flex items-center justify-between *:text-nowrap gap-2 py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
                     data-swapy-item={itemId}
                     key={itemId}
                   >
-                    <div class="flex items-center space-x-3">
-                      <UBadge
-                        color={EmailType.getColor(email.type)}
-                        variant="subtle"
-                        size="sm"
-                      >
-                        {EmailType.getLabel(email.type)}
-                      </UBadge>
-                      <span
-                        data-swapy-no-drag
-                        class="font-mono text-base select-text"
-                      >
-                        {email.value}
-                      </span>
+                    <UBadge
+                      color={EmailType.getColor(email.type)}
+                      variant="subtle"
+                      size="sm"
+                    >
+                      {EmailType.getLabel(email.type)}
+                    </UBadge>
+                    <div
+                      data-swapy-no-drag
+                      class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis font-mono text-base select-text"
+                      title={email.value}
+                    >
+                      {email.value}
                     </div>
-                    <div data-swapy-no-drag class="flex items-center space-x-2">
-                      <USwitch
-                        model-value={email.active}
-                        onChange={() => toggleEmailStatus(email)}
-                      />
-                      <UButton
-                        color="neutral"
-                        variant="ghost"
-                        icon="i-heroicons-trash"
-                        size="xs"
-                        onClick={() => removeEmail(email)}
-                      />
-                    </div>
+
+                    <USwitch
+                      model-value={email.active}
+                      onChange={() => toggleEmailStatus(email)}
+                    />
+                    <UButton
+                      color="neutral"
+                      variant="ghost"
+                      icon="i-heroicons-trash"
+                      size="xs"
+                      onClick={() => removeEmail(email)}
+                    />
+
                   </div>
                 )
               : (
