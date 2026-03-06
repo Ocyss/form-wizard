@@ -28,3 +28,5 @@ web-ext.config.ts
 
 auto-imports.d.ts
 components.d.ts
+
+.github

@@ -1,187 +1,179 @@
-import type { FormError, FormSubmitEvent } from '@nuxt/ui'
-import type { SlotItemMapArray, Swapy } from 'swapy'
-import type { Card } from '@/composables/useCards'
-import UBadge from '@nuxt/ui/components/Badge.vue'
-import UButton from '@nuxt/ui/components/Button.vue'
-import UCard from '@nuxt/ui/components/Card.vue'
-import UDrawer from '@nuxt/ui/components/Drawer.vue'
-import UForm from '@nuxt/ui/components/Form.vue'
-import UFormField from '@nuxt/ui/components/FormField.vue'
-import UInput from '@nuxt/ui/components/Input.vue'
-import UPopover from '@nuxt/ui/components/Popover.vue'
-import URadioGroup from '@nuxt/ui/components/RadioGroup.vue'
-import USelect from '@nuxt/ui/components/Select.vue'
-import USwitch from '@nuxt/ui/components/Switch.vue'
-import UIcon from '@nuxt/ui/runtime/vue/components/Icon.vue'
-import { createSwapy, utils } from 'swapy'
-import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import MyCard from '@/components/MyCard.vue'
-import MyInput from '@/components/MyInput.vue'
-import { useStore } from '@/composables/useStore'
-import { useTab } from '@/composables/useTab'
+import type { FormError, FormSubmitEvent } from "@nuxt/ui";
+import type { SlotItemMapArray, Swapy } from "swapy";
+import type { Card } from "@/composables/useCards";
+import UBadge from "@nuxt/ui/components/Badge.vue";
+import UButton from "@nuxt/ui/components/Button.vue";
+import UCard from "@nuxt/ui/components/Card.vue";
+import UDrawer from "@nuxt/ui/components/Drawer.vue";
+import UForm from "@nuxt/ui/components/Form.vue";
+import UFormField from "@nuxt/ui/components/FormField.vue";
+import UInput from "@nuxt/ui/components/Input.vue";
+import UPopover from "@nuxt/ui/components/Popover.vue";
+import URadioGroup from "@nuxt/ui/components/RadioGroup.vue";
+import USelect from "@nuxt/ui/components/Select.vue";
+import USwitch from "@nuxt/ui/components/Switch.vue";
+import UIcon from "@nuxt/ui/runtime/vue/components/Icon.vue";
+import { createSwapy, utils } from "swapy";
+import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import MyCard from "@/components/MyCard.vue";
+import MyInput from "@/components/MyInput.vue";
+import { useStore } from "@/composables/useStore";
+import { useTab } from "@/composables/useTab";
 
 function EmailEmpty() {
   return (
     <div class="text-center py-8">
-      <UIcon
-        name="i-heroicons-envelope"
-        class="mx-auto h-12 w-12 text-gray-400"
-      />
-      <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
-        暂无邮箱
-      </h3>
+      <UIcon name="i-heroicons-envelope" class="mx-auto h-12 w-12 text-gray-400" />
+      <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">暂无邮箱</h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         添加邮箱以使用表单精灵的自动生成功能
       </p>
     </div>
-  )
+  );
 }
 
 export enum EmailType {
-  DOMAIN = 'domain',
-  ALIAS = 'alias',
+  DOMAIN = "domain",
+  ALIAS = "alias",
 }
 
 export namespace EmailType {
-  export const radioItems: { label: string, value: EmailType }[] = [
+  export const radioItems: { label: string; value: EmailType }[] = [
     {
-      label: '域名邮箱',
+      label: "域名邮箱",
       value: EmailType.DOMAIN,
     },
     {
-      label: '别名邮箱',
+      label: "别名邮箱",
       value: EmailType.ALIAS,
     },
-  ]
+  ];
 
   export function getLabel(type: EmailType) {
-    return type === EmailType.DOMAIN ? '域名邮箱' : '别名邮箱'
+    return type === EmailType.DOMAIN ? "域名邮箱" : "别名邮箱";
   }
 
   export function getColor(type: EmailType) {
-    return type === EmailType.DOMAIN ? 'primary' : 'info'
+    return type === EmailType.DOMAIN ? "primary" : "info";
   }
 }
 
 export interface Email {
-  id: string
-  value: string
-  type: EmailType
-  active: boolean
+  id: string;
+  value: string;
+  type: EmailType;
+  active: boolean;
 }
 
-const emailsRef = useStore<Email[]>('card/emails', [])
+const emailsRef = useStore<Email[]>("card/emails", []);
 
 export function useEmail() {
   const initEmails = async () => {
-    await emailsRef.init()
-    return emailsRef.value
-  }
+    await emailsRef.init();
+    return emailsRef.value;
+  };
   const setEmails = async (emails: Email[]) => {
-    await emailsRef.set(emails)
-  }
+    await emailsRef.set(emails);
+  };
   return {
     emails: emailsRef,
     initEmails,
     getEmails: initEmails,
     setEmails,
-  }
+  };
 }
 
 const EmailGeneratorSettings = defineComponent(async () => {
-  const { getEmails, setEmails } = useEmail()
+  const { getEmails, setEmails } = useEmail();
 
-  const emails = ref(await getEmails())
-  const emailsEdit = ref(false)
-  const emailsSwapy = ref<Swapy | null>(null)
-  const emailsContainer = ref<HTMLElement | null>(null)
-  const emailsSlotItemMap = ref<SlotItemMapArray>([
-    ...utils.initSlotItemMap(emails.value, 'id'),
-  ])
+  const emails = ref(await getEmails());
+  const emailsEdit = ref(false);
+  const emailsSwapy = ref<Swapy | null>(null);
+  const emailsContainer = ref<HTMLElement | null>(null);
+  const emailsSlotItemMap = ref<SlotItemMapArray>([...utils.initSlotItemMap(emails.value, "id")]);
   onMounted(() => {
     if (emailsContainer.value) {
       emailsSwapy.value = createSwapy(emailsContainer.value, {
         manualSwap: true,
-        animation: 'dynamic',
+        animation: "dynamic",
         autoScrollOnDrag: true,
-        swapMode: 'hover',
+        swapMode: "hover",
         enabled: true,
-        dragAxis: 'y',
-      })
+        dragAxis: "y",
+      });
       emailsSwapy.value.onSwap((event) => {
-        emailsEdit.value = true
+        emailsEdit.value = true;
         requestAnimationFrame(() => {
-          emailsSlotItemMap.value = event.newSlotItemMap.asArray
-        })
-      })
+          emailsSlotItemMap.value = event.newSlotItemMap.asArray;
+        });
+      });
     }
-  })
+  });
 
   onUnmounted(() => {
-    emailsSwapy.value?.destroy()
-  })
+    emailsSwapy.value?.destroy();
+  });
   watch(
     emails,
     () =>
       utils.dynamicSwapy(
         emailsSwapy.value,
         emails.value,
-        'id',
+        "id",
         emailsSlotItemMap.value,
         (value: SlotItemMapArray) => (emailsSlotItemMap.value = value),
       ),
     { deep: true },
-  )
+  );
 
   const emailsSlottedItems = computed(() =>
-    utils.toSlottedItems(emails.value, 'id', emailsSlotItemMap.value),
-  )
+    utils.toSlottedItems(emails.value, "id", emailsSlotItemMap.value),
+  );
 
   const newEmail = reactive({
-    value: '',
+    value: "",
     type: EmailType.DOMAIN,
-  })
+  });
 
   const formState = reactive({
-    error: '',
+    error: "",
     isValid: false,
-  })
+  });
 
   function validateEmail(state: Partial<typeof newEmail>) {
-    const errors: FormError[] = []
+    const errors: FormError[] = [];
     if (!state.value) {
       errors.push({
-        name: 'value',
-        message: '请输入邮箱',
-      })
+        name: "value",
+        message: "请输入邮箱",
+      });
     }
 
     if (state.type === EmailType.DOMAIN) {
-      if (!state.value?.startsWith('@')) {
+      if (!state.value?.startsWith("@")) {
         errors.push({
-          name: 'value',
-          message: '域名格式邮箱必须以@开头',
-        })
+          name: "value",
+          message: "域名格式邮箱必须以@开头",
+        });
       }
-    }
-    else if (state.type === EmailType.ALIAS) {
-      const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
-      if (!emailRegex.test(state.value ?? '')) {
+    } else if (state.type === EmailType.ALIAS) {
+      const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i;
+      if (!emailRegex.test(state.value ?? "")) {
         errors.push({
-          name: 'value',
-          message: '请输入有效的邮箱地址',
-        })
+          name: "value",
+          message: "请输入有效的邮箱地址",
+        });
       }
     }
 
-    if (emails.value.some(email => email.value === state.value)) {
+    if (emails.value.some((email) => email.value === state.value)) {
       errors.push({
-        name: 'value',
-        message: '该邮箱已存在',
-      })
+        name: "value",
+        message: "该邮箱已存在",
+      });
     }
 
-    return errors
+    return errors;
   }
 
   function addEmail(event: FormSubmitEvent<typeof newEmail>) {
@@ -190,36 +182,33 @@ const EmailGeneratorSettings = defineComponent(async () => {
       value: event.data.value,
       type: event.data.type,
       active: true,
-    })
-    emailsEdit.value = true
-    newEmail.value = ''
-    newEmail.type = EmailType.DOMAIN
-    formState.isValid = false
+    });
+    emailsEdit.value = true;
+    newEmail.value = "";
+    newEmail.type = EmailType.DOMAIN;
+    formState.isValid = false;
   }
 
   function removeEmail(item: Email) {
-    emails.value = emails.value.filter(email => email.id !== item.id)
-    emailsEdit.value = true
+    emails.value = emails.value.filter((email) => email.id !== item.id);
+    emailsEdit.value = true;
   }
 
   function toggleEmailStatus(item: Email) {
-    const email = emails.value.find(email => email.id === item.id)
+    const email = emails.value.find((email) => email.id === item.id);
     if (email) {
-      email.active = !email.active
-      emailsEdit.value = true
+      email.active = !email.active;
+      emailsEdit.value = true;
     }
   }
 
   async function saveEmails() {
     await setEmails(
-      emailsSlottedItems.value
-        .map(item => item.item)
-        .filter(item => item !== null),
-    )
-    emailsEdit.value = false
+      emailsSlottedItems.value.map((item) => item.item).filter((item) => item !== null),
+    );
+    emailsEdit.value = false;
   }
   return () => (
-
     <div class="p-4 space-y-6">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold">邮箱设置</h2>
@@ -227,15 +216,10 @@ const EmailGeneratorSettings = defineComponent(async () => {
           {{
             default() {
               return (
-                <UButton
-                  label="Open"
-                  icon="i-heroicons-plus"
-                  color="primary"
-                  variant="soft"
-                >
+                <UButton label="Open" icon="i-heroicons-plus" color="primary" variant="soft">
                   添加邮箱
                 </UButton>
-              )
+              );
             },
             content() {
               return (
@@ -246,7 +230,7 @@ const EmailGeneratorSettings = defineComponent(async () => {
                         <div class="flex items-center justify-between">
                           <h3 class="text-base font-semibold">添加新邮箱</h3>
                         </div>
-                      )
+                      );
                     },
                     default() {
                       return (
@@ -270,24 +254,22 @@ const EmailGeneratorSettings = defineComponent(async () => {
                               v-model={newEmail.value}
                               placeholder={
                                 newEmail.type === EmailType.DOMAIN
-                                  ? '@example.com'
-                                  : 'user@example.com'
+                                  ? "@example.com"
+                                  : "user@example.com"
                               }
                             />
                           </UFormField>
                           <div class="flex justify-end">
                             <UButton color="primary" type="submit">
-
                               添加
-
                             </UButton>
                           </div>
                         </UForm>
-                      )
+                      );
                     },
                   }}
                 </UCard>
-              )
+              );
             },
           }}
         </UPopover>
@@ -300,7 +282,7 @@ const EmailGeneratorSettings = defineComponent(async () => {
 
       <div
         ref={emailsContainer}
-        class={['space-y-3', emails.value.length > 0 ? 'block' : 'hidden']}
+        class={["space-y-3", emails.value.length > 0 ? "block" : "hidden"]}
       >
         {emailsSlottedItems.value.map(({ slotId, itemId, item: email }) => (
           <div
@@ -309,45 +291,35 @@ const EmailGeneratorSettings = defineComponent(async () => {
             key={slotId}
             data-swapy-slot={slotId}
           >
-            {email
-              ? (
-                  <div
-                    class="flex items-center justify-between *:text-nowrap gap-2 py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
-                    data-swapy-item={itemId}
-                    key={itemId}
-                  >
-                    <UBadge
-                      color={EmailType.getColor(email.type)}
-                      variant="subtle"
-                      size="sm"
-                    >
-                      {EmailType.getLabel(email.type)}
-                    </UBadge>
-                    <div
-                      data-swapy-no-drag
-                      class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis font-mono text-base select-text"
-                      title={email.value}
-                    >
-                      {email.value}
-                    </div>
+            {email ? (
+              <div
+                class="flex items-center justify-between *:text-nowrap gap-2 py-4 px-3 rounded-[calc(var(--ui-radius)*2)] bg-(--ui-bg-muted)/40"
+                data-swapy-item={itemId}
+                key={itemId}
+              >
+                <UBadge color={EmailType.getColor(email.type)} variant="subtle" size="sm">
+                  {EmailType.getLabel(email.type)}
+                </UBadge>
+                <div
+                  data-swapy-no-drag
+                  class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis font-mono text-base select-text"
+                  title={email.value}
+                >
+                  {email.value}
+                </div>
 
-                    <USwitch
-                      model-value={email.active}
-                      onChange={() => toggleEmailStatus(email)}
-                    />
-                    <UButton
-                      color="neutral"
-                      variant="ghost"
-                      icon="i-heroicons-trash"
-                      size="xs"
-                      onClick={() => removeEmail(email)}
-                    />
-
-                  </div>
-                )
-              : (
-                  <div></div>
-                )}
+                <USwitch model-value={email.active} onChange={() => toggleEmailStatus(email)} />
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-heroicons-trash"
+                  size="xs"
+                  onClick={() => removeEmail(email)}
+                />
+              </div>
+            ) : (
+              <div></div>
+            )}
           </div>
         ))}
       </div>
@@ -360,92 +332,83 @@ const EmailGeneratorSettings = defineComponent(async () => {
         )}
       </div>
     </div>
-
-  )
-})
+  );
+});
 
 export default function (): Card {
   const info = {
-    key: 'EmailGenerator',
-    title: '邮箱生成',
-    description: '生成邮箱地址',
-    icon: 'i-bi:envelope-open',
-  }
+    key: "EmailGenerator",
+    title: "邮箱生成",
+    description: "生成邮箱地址",
+    icon: "i-bi:envelope-open",
+  };
   return {
     ...info,
     render: defineComponent(
       (props: { editState: boolean }) => {
-        const { emails, initEmails } = useEmail()
-        const { tab } = useTab()
+        const { emails, initEmails } = useEmail();
+        const { tab } = useTab();
         const currentUrl = computed(() => {
-          if (!tab.value?.url)
-            return ''
+          if (!tab.value?.url) return "";
           try {
-            return new URL(tab.value.url).hostname
+            return new URL(tab.value.url).hostname;
+          } catch (e) {
+            console.log("获取当前URL失败", e);
+            return "";
           }
-          catch (e) {
-            console.log('获取当前URL失败', e)
-            return ''
-          }
-        })
+        });
 
-        const selectedEmail = ref<string | undefined>()
+        const selectedEmail = ref<string | undefined>();
         const domainParts = computed(() => {
-          if (!currentUrl.value)
-            return []
+          if (!currentUrl.value) return [];
 
-          const parts = currentUrl.value.split('.')
-          const result = []
+          const parts = currentUrl.value.split(".");
+          const result = [];
 
           // 完整域名
-          result.push(currentUrl.value)
+          result.push(currentUrl.value);
 
           // 如果有三段或以上，添加不带子域名的版本
           if (parts.length >= 3) {
-            result.push(parts.slice(parts.length - 2).join('.'))
+            result.push(parts.slice(parts.length - 2).join("."));
           }
 
           // 添加最短版本（通常是主域名）
           if (parts.length >= 2) {
-            result.push(parts[parts.length - 2])
+            result.push(parts[parts.length - 2]);
           }
 
-          return result
-        })
+          return result;
+        });
 
         const generatedEmails = computed(() => {
-          if (!selectedEmail.value || !currentUrl.value)
-            return []
+          if (!selectedEmail.value || !currentUrl.value) return [];
 
-          const email = emails.value.find(
-            email => email.id === selectedEmail.value,
-          )
-          if (!email)
-            return []
+          const email = emails.value.find((email) => email.id === selectedEmail.value);
+          if (!email) return [];
 
-          const result: string[] = []
+          const result: string[] = [];
 
-          if (email.value.startsWith('@')) {
+          if (email.value.startsWith("@")) {
             domainParts.value.forEach((part) => {
-              result.push(`${part}${email.value}`)
-            })
-          }
-          else {
-            const [username, domain] = email.value.split('@')
+              result.push(`${part}${email.value}`);
+            });
+          } else {
+            const [username, domain] = email.value.split("@");
 
             domainParts.value.forEach((part) => {
-              result.push(`${username}+${part}@${domain}`)
+              result.push(`${username}+${part}@${domain}`);
               if (part === domainParts.value[domainParts.value.length - 1]) {
-                result.push(`${username}.${part}@${domain}`)
+                result.push(`${username}.${part}@${domain}`);
               }
-            })
+            });
           }
 
-          return result
-        })
+          return result;
+        });
         onMounted(async () => {
-          selectedEmail.value = (await initEmails())[0]?.id
-        })
+          selectedEmail.value = (await initEmails())[0]?.id;
+        });
         return () => (
           <MyCard info={info} editState={props.editState}>
             {{
@@ -454,7 +417,7 @@ export default function (): Card {
                   <div class="flex items-center gap-1">
                     <USelect
                       v-model={selectedEmail.value}
-                      items={emails.value.map(email => ({
+                      items={emails.value.map((email) => ({
                         id: email.id,
                         label: email.value,
                       }))}
@@ -468,7 +431,7 @@ export default function (): Card {
                       handle-only
                       should-scale-background
                       set-background-color-on-scale
-                      ui={{ content: 'min-h-3/5' }}
+                      ui={{ content: "min-h-3/5" }}
                     >
                       {{
                         default() {
@@ -479,46 +442,44 @@ export default function (): Card {
                               variant="ghost"
                               size="xs"
                             />
-                          )
+                          );
                         },
                         content() {
-                          return <EmailGeneratorSettings />
+                          return <EmailGeneratorSettings />;
                         },
                       }}
                     </UDrawer>
                   </div>
-                )
+                );
               },
               default: () => {
                 return (
                   <div class="space-y-4">
-                    {selectedEmail.value != null
-                      ? (
-                          <div class="space-y-2">
-                            {generatedEmails.value.map((email, index) => (
-                              <MyInput
-                                key={index}
-                                model-value={email}
-                                class="w-full"
-                                readonly
-                                copyable
-                              />
-                            ))}
-                          </div>
-                        )
-                      : (
-                          EmailEmpty()
-                        )}
+                    {selectedEmail.value != null ? (
+                      <div class="space-y-2">
+                        {generatedEmails.value.map((email, index) => (
+                          <MyInput
+                            key={index}
+                            model-value={email}
+                            class="w-full"
+                            readonly
+                            copyable
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      EmailEmpty()
+                    )}
                   </div>
-                )
+                );
               },
             }}
           </MyCard>
-        )
+        );
       },
       {
-        props: ['editState'],
+        props: ["editState"],
       },
     ),
-  }
+  };
 }

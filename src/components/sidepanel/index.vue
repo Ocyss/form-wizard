@@ -1,21 +1,27 @@
 <script lang="tsx" setup>
-import type { SlotItemMapArray, Swapy } from 'swapy'
-import UButton from '@nuxt/ui/components/Button.vue'
-import UCard from '@nuxt/ui/components/Card.vue'
-import { utils } from 'swapy'
-import { computed, onUnmounted, ref, useTemplateRef, watch } from 'vue'
-import { useCards } from '@/composables/useCards'
-import { useTab } from '@/composables/useTab'
+import type { SlotItemMapArray, Swapy } from "swapy";
+import UButton from "@nuxt/ui/components/Button.vue";
+import UCard from "@nuxt/ui/components/Card.vue";
+import { utils } from "swapy";
+import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import { useCards } from "@/composables/useCards";
+import { useTab } from "@/composables/useTab";
 
-const { cards, cardMap, unusedCards, addCard, initCards, saveCards, editState: cardEditState } = useCards()
+const {
+  cards,
+  cardMap,
+  unusedCards,
+  addCard,
+  initCards,
+  saveCards,
+  editState: cardEditState,
+} = useCards();
 
-await initCards()
+await initCards();
 
-const container = useTemplateRef('container')
-const swapy = ref<Swapy | null>(null)
-const slotItemMap = ref<SlotItemMapArray>([
-  ...utils.initSlotItemMap(cards.value, 'key'),
-])
+const container = useTemplateRef("container");
+const swapy = ref<Swapy | null>(null);
+const slotItemMap = ref<SlotItemMapArray>([...utils.initSlotItemMap(cards.value, "key")]);
 
 watch(
   cards,
@@ -23,31 +29,29 @@ watch(
     utils.dynamicSwapy(
       swapy.value,
       cards.value,
-      'key',
+      "key",
       slotItemMap.value,
       (value: SlotItemMapArray) => (slotItemMap.value = value),
     ),
   { deep: true },
-)
+);
 
-const slottedItems = computed(() =>
-  utils.toSlottedItems(cards.value, 'key', slotItemMap.value),
-)
+const slottedItems = computed(() => utils.toSlottedItems(cards.value, "key", slotItemMap.value));
 
 onUnmounted(() => {
-  swapy.value?.destroy()
-})
+  swapy.value?.destroy();
+});
 
-const { tab, refreshTab } = useTab()
-await refreshTab()
+const { tab, refreshTab } = useTab();
+await refreshTab();
 // const currentFormID = ref(formArray.value?.[0]?.id)
 // const currentForm = computedAsync(async () => await formService.value?.queryForm(currentFormID.value))
 
-const editState = ref(false)
+const editState = ref(false);
 
 function highlightTab() {
   if (!tab.value?.id) {
-    return
+    return;
   }
   chrome.tabs.update(
     tab.value.id,
@@ -55,13 +59,13 @@ function highlightTab() {
       active: true,
     },
     () => {
-      console.log('highlighted')
+      console.log("highlighted");
     },
-  )
+  );
 }
 
 async function editCard() {
-  editState.value = !editState.value
+  editState.value = !editState.value;
   if (editState.value) {
     // TODO: 样式bug
     // if (container.value) {
@@ -78,10 +82,9 @@ async function editCard() {
     //     })
     //   })
     // }
-  }
-  else {
-    await initCards()
-    swapy.value?.destroy()
+  } else {
+    await initCards();
+    swapy.value?.destroy();
   }
 }
 </script>
@@ -116,9 +119,7 @@ async function editCard() {
     </div>
     <div>
       <UButton
-        :icon="
-          editState ? 'i-icon-park-twotone:back' : 'i-icon-park-twotone:edit'
-        "
+        :icon="editState ? 'i-icon-park-twotone:back' : 'i-icon-park-twotone:edit'"
         color="neutral"
         size="xs"
         @click="editCard()"
@@ -128,10 +129,12 @@ async function editCard() {
         icon="i-icon-park-twotone:save"
         color="neutral"
         size="xs"
-        @click="() => {
-          saveCards()
-          editState = false
-        }"
+        @click="
+          () => {
+            saveCards();
+            editState = false;
+          }
+        "
       />
     </div>
   </header>
@@ -155,9 +158,7 @@ async function editCard() {
     <UCard v-if="unusedCards.length > 0">
       <template #header>
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-medium">
-            工具箱
-          </h3>
+          <h3 class="text-lg font-medium">工具箱</h3>
         </div>
       </template>
       <div

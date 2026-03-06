@@ -8,20 +8,10 @@ import UTextarea from "@nuxt/ui/components/Textarea.vue";
 import USlider from "@nuxt/ui/components/Slider.vue";
 import UFormField from "@nuxt/ui/components/FormField.vue";
 import MyInput from "@/components/MyInput.vue";
-import {
-  mainnetClient,
-  roundAt,
-  roundTime,
-  timelockDecrypt,
-  timelockEncrypt,
-} from "tlock-js";
+import { mainnetClient, roundAt, roundTime, timelockDecrypt, timelockEncrypt } from "tlock-js";
 import MyCard from "@/components/MyCard.vue";
 import { Buffer } from "buffer";
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-} from "@internationalized/date";
+import { CalendarDate, DateFormatter, getLocalTimeZone } from "@internationalized/date";
 import MyAlert from "@/components/MyAlert.vue";
 import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/composables/useStore";
@@ -33,17 +23,10 @@ import {
 
 const client = mainnetClient();
 
-export async function encrypt(
-  message: string,
-  targetTime: number,
-): Promise<string> {
+export async function encrypt(message: string, targetTime: number): Promise<string> {
   const chainInfo = await client.chain().info();
   const roundId = roundAt(targetTime, chainInfo);
-  const ciphertext = await timelockEncrypt(
-    roundId,
-    Buffer.from(message),
-    client,
-  );
+  const ciphertext = await timelockEncrypt(roundId, Buffer.from(message), client);
 
   return btoa(ciphertext);
 }
@@ -61,10 +44,7 @@ export async function decrypt(ciphertext: string): Promise<string | Date> {
 // This takes an error thrown from decryption
 // if the error is because decryption has been attempted too early, it remaps the message to tell the user when they can decrypt
 // otherwise it just returns a generic error message, as some of the internal tlock error messages are a bit inscrutable to the end user
-function localisedDecryptionMessageOrDefault(
-  err: unknown,
-  chainInfo: ChainInfo,
-): Date {
+function localisedDecryptionMessageOrDefault(err: unknown, chainInfo: ChainInfo): Date {
   let message = "未知错误";
   if (err instanceof Error) {
     message = err.message;
@@ -78,9 +58,7 @@ function localisedDecryptionMessageOrDefault(
     throw new Error("解密过程中出错！您的密文是否有效？");
   }
 
-  const roundNumber = Number.parseInt(
-    message.split(tooEarlyToDecryptErrorMessage)[1],
-  );
+  const roundNumber = Number.parseInt(message.split(tooEarlyToDecryptErrorMessage)[1]);
   const timeToDecryption = new Date(roundTime(chainInfo, roundNumber));
   return timeToDecryption;
 }
@@ -89,11 +67,7 @@ function localisedDecryptionMessageOrDefault(
 
 function getPresetDates() {
   const now = new Date();
-  const current = new CalendarDate(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    now.getDate(),
-  );
+  const current = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
   const getNextYearDate = (month: number, date: number) => {
     const targetDate = new Date(now.getFullYear(), month - 1, date);
     return now > targetDate
@@ -173,10 +147,7 @@ export default function () {
             errorMessage.value = "";
 
             const targetDate = selectedDate.value.toDate(getLocalTimeZone());
-            const encryptedText = await encrypt(
-              password.value,
-              targetDate.getTime(),
-            );
+            const encryptedText = await encrypt(password.value, targetDate.getTime());
             ciphertext.value = encryptedText;
           } catch (error) {
             if (error instanceof Error) {
@@ -239,11 +210,7 @@ export default function () {
               headerRight: () => {
                 return (
                   <UButton
-                    icon={
-                      isEncryptMode.value
-                        ? "i-lucide-lock-open"
-                        : "i-lucide-lock"
-                    }
+                    icon={isEncryptMode.value ? "i-lucide-lock-open" : "i-lucide-lock"}
                     color="primary"
                     variant="ghost"
                     size="xs"
@@ -270,11 +237,7 @@ export default function () {
                                     disabled={!!ciphertext.value}
                                   >
                                     {selectedDate.value
-                                      ? df.format(
-                                          selectedDate.value.toDate(
-                                            getLocalTimeZone(),
-                                          ),
-                                        )
+                                      ? df.format(selectedDate.value.toDate(getLocalTimeZone()))
                                       : "选择日期"}
                                   </UButton>
                                 );
@@ -324,18 +287,14 @@ export default function () {
                                 color="primary"
                                 size="xs"
                                 class="absolute top-2 right-2"
-                                onClick={() =>
-                                  copyToClipboard(ciphertext.value)
-                                }
+                                onClick={() => copyToClipboard(ciphertext.value)}
                               />
                             </UFormField>
 
                             <MyAlert
                               color="warning"
                               description={`此密文只能在
-                              ${df.format(
-                                selectedDate.value.toDate(getLocalTimeZone()),
-                              )}
+                              ${df.format(selectedDate.value.toDate(getLocalTimeZone()))}
                               之后解密`}
                               icon="i-lucide-alert-triangle"
                             />
@@ -383,26 +342,20 @@ export default function () {
                                 label={`密码长度: ${passwordOptions.value.length}`}
                                 size="xs"
                               >
-                                <USlider
-                                  min={4}
-                                  max={22}
-                                  v-model={passwordOptions.value.length}
-                                />
+                                <USlider min={4} max={22} v-model={passwordOptions.value.length} />
                               </UFormField>
                               <div class="flex flex-wrap gap-4">
-                                {Object.entries(PASSWORD_CHARSETS).map(
-                                  ([key, val]) => (
-                                    <UCheckbox
-                                      v-model={
-                                        passwordOptions.value[
-                                          key as keyof typeof passwordOptions.value
-                                        ]
-                                      }
-                                      label={val.label}
-                                      size="sm"
-                                    />
-                                  ),
-                                )}
+                                {Object.entries(PASSWORD_CHARSETS).map(([key, val]) => (
+                                  <UCheckbox
+                                    v-model={
+                                      passwordOptions.value[
+                                        key as keyof typeof passwordOptions.value
+                                      ]
+                                    }
+                                    label={val.label}
+                                    size="sm"
+                                  />
+                                ))}
                               </div>
                               <div class="flex justify-end">
                                 <UButton
@@ -423,9 +376,7 @@ export default function () {
                     ) : (
                       <div class="space-y-4">
                         <div>
-                          <label class="block text-sm font-medium mb-1">
-                            输入密文
-                          </label>
+                          <label class="block text-sm font-medium mb-1">输入密文</label>
                           <textarea
                             v-model={ciphertext.value}
                             placeholder="粘贴要解密的密文"
@@ -457,8 +408,7 @@ export default function () {
                         {decryptionDate.value && (
                           <div class="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-md">
                             <p class="text-amber-700 dark:text-amber-300 text-sm">
-                              此密文尚未到解锁时间，将在{" "}
-                              {df.format(decryptionDate.value)} 后可解密
+                              此密文尚未到解锁时间，将在 {df.format(decryptionDate.value)} 后可解密
                             </p>
                           </div>
                         )}

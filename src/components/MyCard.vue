@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { useCards } from '@/composables/useCards'
+import { computed } from "vue";
+import { useCards } from "@/composables/useCards";
 
 const props = defineProps<{
   info: {
-    title: string
-    key: string
-  }
-  editState: boolean
-}>()
+    title: string;
+    key: string;
+  };
+  editState: boolean;
+}>();
 
-const { deleteCard, cards } = useCards()
+const { deleteCard, cards } = useCards();
 
 const cardState = computed(() => {
-  return cards.value.find(card => card.key === props.info.key)
-})
+  return cards.value.find((card) => card.key === props.info.key);
+});
 </script>
 
 <template>
@@ -40,6 +40,4 @@ const cardState = computed(() => {
   </UCard>
 </template>
 
-<style>
-
-</style>
+<style></style>

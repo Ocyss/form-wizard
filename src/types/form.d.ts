@@ -1,54 +1,70 @@
 interface Form {
-  $el: HTMLFormElement
-  items: Record<string, FormItem>
-  id: string
-  index: number
-  label?: string
-  description?: string
+  $el: HTMLFormElement;
+  items: Record<string, FormItem>;
+  id: string;
+  index: number;
+  label?: string;
+  description?: string;
 }
 
-type FormItemElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-type FormItemType = 'text' | 'radio' | 'password' | 'textarea' | 'file' | 'number' | 'checkbox' | 'select'
+type FormItemElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+type FormItemType =
+  | "text"
+  | "radio"
+  | "password"
+  | "textarea"
+  | "file"
+  | "number"
+  | "checkbox"
+  | "select";
 
 interface FormItemCommon {
-  $el: FormItemElement
-  id: string
-  label?: string
-  description?: string
-  type: FormItemType
+  $el: FormItemElement;
+  id: string;
+  label?: string;
+  description?: string;
+  type: FormItemType;
 }
 
 interface FormItemText extends FormItemCommon {
-  type: 'text'
-  placeholder?: string
+  type: "text";
+  placeholder?: string;
 }
 
 interface FormItemRadio extends FormItemCommon {
-  type: 'radio'
+  type: "radio";
 }
 
 interface FormItemPassword extends FormItemCommon {
-  type: 'password'
+  type: "password";
 }
 
 interface FormItemTextarea extends FormItemCommon {
-  type: 'textarea'
+  type: "textarea";
 }
 
 interface FormItemFile extends FormItemCommon {
-  type: 'file'
+  type: "file";
 }
 
 interface FormItemNumber extends FormItemCommon {
-  type: 'number'
+  type: "number";
 }
 
 interface FormItemCheckbox extends FormItemCommon {
-  type: 'checkbox'
+  type: "checkbox";
 }
 
 interface FormItemSelect extends FormItemCommon {
-  type: 'select'
+  type: "select";
 }
 
-type FormItem = FormItemText | FormItemRadio | FormItemPassword | FormItemTextarea | FormItemFile | FormItemNumber | FormItemCheckbox | FormItemSelect
+type FormItem =
+  | FormItemText
+  | FormItemRadio
+  | FormItemPassword
+  | FormItemTextarea
+  | FormItemFile
+  | FormItemNumber
+  | FormItemCheckbox
+  | FormItemSelect;

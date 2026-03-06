@@ -1,9 +1,9 @@
 {
   "name": "form-wizard",
-  "type": "module",
   "version": "0.0.1",
   "private": true,
   "description": "manifest.json description",
+  "type": "module",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
@@ -12,30 +12,36 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "vue-tsc --noEmit",
-    "postinstall": "wxt prepare",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix"
   },
   "dependencies": {
-    "@nuxt/ui": "3.3.2",
-    "@tailwindcss/vite": "^4.1.8",
-    "@vueuse/core": "^13.3.0",
-    "@wxt-dev/storage": "^1.1.1",
-    "comctx": "^1.2.0",
+    "@nuxt/ui": "4.5.1",
+    "@tailwindcss/vite": "^4.2.1",
+    "@vueuse/core": "^14.2.1",
+    "@wxt-dev/storage": "^1.2.8",
+    "comctx": "^1.6.1",
     "swapy": "^1.0.5",
-    "tailwindcss": "^4.1.8",
+    "tailwindcss": "^4.2.1",
     "tlock-js": "^0.9.0",
-    "vue": "^3.5.16"
+    "vue": "^3.5.29"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.13.2",
-    "@types/chrome": "^0.0.325",
-    "@vitejs/plugin-vue-jsx": "^4.2.0",
-    "@wxt-dev/module-vue": "^1.0.2",
-    "prettier-eslint": "^16.4.2",
+    "@types/chrome": "^0.1.37",
+    "@vitejs/plugin-vue-jsx": "^5.1.4",
+    "@wxt-dev/module-vue": "^1.0.3",
+    "oxfmt": "^0.36.0",
+    "oxlint": "^1.51.0",
+    "oxlint-tsgolint": "^0.16.0",
     "tailwind-scrollbar": "^4.0.2",
-    "typescript": "5.8.3",
-    "vue-tsc": "^2.2.10",
-    "wxt": "^0.20.6"
+    "typescript": "5.9.3",
+    "vue-tsc": "^3.2.5",
+    "wxt": "^0.20.18"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "oxlint --fix"
   }
 }

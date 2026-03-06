@@ -1,26 +1,25 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { copyToClipboard } from '@/utils/copy'
+import { ref } from "vue";
+import { copyToClipboard } from "@/utils/copy";
 
 const props = defineProps<{
-  value: string
-}>()
+  value: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'copy', value: string): void
-}>()
+  (e: "copy", value: string): void;
+}>();
 
-const copied = ref(false)
+const copied = ref(false);
 
 function copy() {
-  if (!props.value)
-    return
-  copyToClipboard(props.value)
-  copied.value = true
-  emit('copy', props.value)
+  if (!props.value) return;
+  copyToClipboard(props.value);
+  copied.value = true;
+  emit("copy", props.value);
   setTimeout(() => {
-    copied.value = false
-  }, 2000)
+    copied.value = false;
+  }, 2000);
 }
 </script>
 
