@@ -21,7 +21,7 @@ const cardState = computed(() => {
   <UCard class="relative" :ui="{ root: 'overflow-visible' }">
     <template #header>
       <div data-swapy-handle class="flex items-center justify-between">
-        <div class="text-lg font-medium flex-1">
+        <div class="text-sm font-medium flex-1">
           {{ props.info.title }}
         </div>
         <slot name="headerRight" />

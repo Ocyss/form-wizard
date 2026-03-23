@@ -5,6 +5,7 @@ import EmailGenerator from "@/components/cards/EmailGenerator";
 import PasswordGenerator from "@/components/cards/PasswordGenerator";
 import RealAddressGenerator from "@/components/cards/RealAddressGenerator";
 import TimeCapsuleVault from "@/components/cards/TimeCapsuleVault";
+import UsernameGenerator from "@/components/cards/UsernameGenerator";
 import { useStore } from "./useStore";
 
 export interface CardInfo {
@@ -24,6 +25,7 @@ const cardsComponents: Card[] = [
   EmailGenerator(),
   PasswordGenerator(),
   RealAddressGenerator(),
+  UsernameGenerator(),
   TimeCapsuleVault(),
 ];
 

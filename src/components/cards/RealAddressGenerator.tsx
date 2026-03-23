@@ -15,11 +15,14 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import MyCard from "@/components/MyCard.vue";
 import MyInput from "@/components/MyInput.vue";
 import { useStore } from "@/composables/useStore";
+import { useGlobalSettings } from "@/composables/useGlobalSettings";
 
 interface AddressInfo {
-  name: string;
-  gender: string;
-  address: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  postcode: string;
   country: string;
 }
 
@@ -73,16 +76,6 @@ interface AddressApiResponse {
     village: string;
   };
   boundingbox: Array<string>;
-}
-
-interface UserApiResponse {
-  results?: Array<{
-    name: {
-      first: string;
-      last: string;
-    };
-    gender: string;
-  }>;
 }
 
 const countries: Record<string, CountryInfo> = {
@@ -284,11 +277,17 @@ export default function (): Card {
   return {
     ...info,
     render: defineComponent(
-      (props: { editState: boolean }) => {
+      (props: { editState: boolean; globalCountry: string }) => {
         const { addresses, state, initData, saveAddress, removeAddress, updateState } =
           useRealAddress();
+        const { updateSettings } = useGlobalSettings();
         const currentAddress = ref<AddressInfo | null>(null);
         const isGenerating = ref(false);
+
+        const hasGlobalCountry = computed(() => !!props.globalCountry);
+        const effectiveCountry = computed(() =>
+          props.globalCountry || state.value.selectedCountry.code,
+        );
 
         const savedAddressOptions = computed<(SavedAddress & CountryInfo)[]>(() =>
           addresses.value.map((address) => ({
@@ -304,9 +303,7 @@ export default function (): Card {
         async function generateAddress() {
           isGenerating.value = true;
           try {
-            let address = "";
-            let name = "John Doe";
-            let gender = "Unknown";
+            let addressData: AddressApiResponse | null = null;
 
             for (let i = 0; i < 100; i++) {
               const location = getRandomLocationInCountry(state.value.selectedCountry.code);
@@ -323,7 +320,7 @@ export default function (): Card {
                   data.address.road &&
                   (data.address.city || data.address.town)
                 ) {
-                  address = data.display_name;
+                  addressData = data;
                   break;
                 }
               } catch (e) {
@@ -331,35 +328,42 @@ export default function (): Card {
               }
             }
 
-            if (!address) {
-              address = "无法获取地址，请重试";
+            if (!addressData) {
+              currentAddress.value = {
+                address1: "无法获取地址",
+                address2: "请重试",
+                city: "",
+                state: "",
+                postcode: "",
+                country: effectiveCountry.value,
+              };
+              return;
             }
 
-            try {
-              const userData = await fetch("https://randomuser.me/api/");
-              const userJson = (await userData.json()) as UserApiResponse;
-              if (userJson?.results?.[0]) {
-                const user = userJson.results[0];
-                name = `${user.name.first} ${user.name.last}`;
-                gender = user.gender.charAt(0).toUpperCase() + user.gender.slice(1);
-              }
-            } catch (e) {
-              console.warn("用户数据获取失败，使用默认值:", e);
-            }
+            const addr = addressData.address;
+            const address1 = [addr.house_number, addr.road].filter(Boolean).join(" ");
+            const address2 = [addr.quarter, addr.suburb].filter(Boolean).join(", ") || "";
+            const city = addr.city || addr.town || addr.village || "";
+            const stateName = addr.state || addr["ISO3166-2-lvl4"] || "";
+            const postcode = addr.postcode || "";
 
             currentAddress.value = {
-              name,
-              gender,
-              address,
-              country: state.value.selectedCountry.code,
+              address1,
+              address2,
+              city,
+              state: stateName,
+              postcode,
+              country: effectiveCountry.value,
             };
           } catch (error) {
             console.error("生成地址失败:", error);
             currentAddress.value = {
-              name: "Error",
-              gender: "Unknown",
-              address: "生成失败，请重试",
-              country: state.value.selectedCountry.code,
+              address1: "生成失败",
+              address2: "请重试",
+              city: "",
+              state: "",
+              postcode: "",
+              country: effectiveCountry.value,
             };
           } finally {
             isGenerating.value = false;
@@ -387,6 +391,7 @@ export default function (): Card {
         }
 
         async function onCountryChange(country: CountryInfo) {
+          if (hasGlobalCountry.value) return;
           await updateState({ selectedCountry: country });
           await generateAddress();
         }
@@ -429,32 +434,19 @@ export default function (): Card {
 
                   {state.value.viewMode === "generate" ? (
                     <>
-                      <USelectMenu
-                        model-value={state.value.selectedCountry}
-                        onUpdate:modelValue={onCountryChange}
-                        items={Object.values(countries)}
-                        placeholder="选择国家"
-                        labelKey="name"
-                        size="xs"
-                        class="w-24"
-                        ui={{ content: "min-w-fit" }}
-                        icon={state.value.selectedCountry.icon}
-                      />
-                      <UButton
-                        icon={
-                          state.value.language === "en-US"
-                            ? "i-uil-letter-english-a"
-                            : "i-uil-letter-chinese-a"
-                        }
-                        color="primary"
-                        variant="ghost"
-                        size="xs"
-                        onClick={async () =>
-                          updateState({
-                            language: state.value.language === "en-US" ? "zh-CN" : "en-US",
-                          })
-                        }
-                      />
+                      {!hasGlobalCountry.value && (
+                        <USelectMenu
+                          model-value={state.value.selectedCountry}
+                          onUpdate:modelValue={onCountryChange}
+                          items={Object.values(countries)}
+                          placeholder="选择国家"
+                          labelKey="name"
+                          size="xs"
+                          class="w-24"
+                          ui={{ content: "min-w-fit" }}
+                          icon={state.value.selectedCountry.icon}
+                        />
+                      )}
                       <UButton
                         icon="i-heroicons-arrow-path"
                         color="primary"
@@ -483,26 +475,11 @@ export default function (): Card {
                 <div class="space-y-4">
                   {displayAddress.value ? (
                     <div class="space-y-2">
-                      {[
-                        { key: "姓名", value: displayAddress.value.name },
-                        { key: "性别", value: displayAddress.value.gender },
-                        { key: "地址", value: displayAddress.value.address, isArea: true },
-                      ].map(({ key, value, isArea }) => (
-                        <div key={key} class="flex items-start gap-2">
-                          {/* <span class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap pt-2 min-w-12">
-                                {key}
-                                :
-                              </span> */}
-                          <MyInput
-                            model-value={value}
-                            placeholder={key}
-                            readonly
-                            copyable
-                            isArea={isArea}
-                            class="flex-1"
-                          />
-                        </div>
-                      ))}
+                      <MyInput model-value={displayAddress.value.address1} label="地址1" readonly copyable class="flex-1" />
+                      <MyInput model-value={displayAddress.value.address2} label="地址2" readonly copyable class="flex-1" />
+                      <MyInput model-value={displayAddress.value.city} label="城市" readonly copyable class="flex-1" />
+                      <MyInput model-value={displayAddress.value.state} label="州/省" readonly copyable class="flex-1" />
+                      <MyInput model-value={displayAddress.value.postcode} label="邮编" readonly copyable class="flex-1" />
 
                       <div class="flex justify-between pt-2">
                         {state.value.viewMode === "saved" && selectedSavedAddress.value && (

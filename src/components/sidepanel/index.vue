@@ -2,10 +2,13 @@
 import type { SlotItemMapArray, Swapy } from "swapy";
 import UButton from "@nuxt/ui/components/Button.vue";
 import UCard from "@nuxt/ui/components/Card.vue";
+import USelectMenu from "@nuxt/ui/components/SelectMenu.vue";
 import { utils } from "swapy";
 import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useCards } from "@/composables/useCards";
 import { useTab } from "@/composables/useTab";
+import { useGlobalSettings } from "@/composables/useGlobalSettings";
+import { getCountryList } from "@/utils/names";
 
 const {
   cards,
@@ -18,6 +21,24 @@ const {
 } = useCards();
 
 await initCards();
+
+const { settings, init: initSettings, updateSettings } = useGlobalSettings();
+await initSettings();
+
+const countries = getCountryList();
+const countryOptions = [
+  { code: "", name: "默认", icon: "" },
+  ...countries.map((c) => ({ code: c.code, name: c.name, icon: c.icon })),
+];
+
+const languageOptions = [
+  { value: "en", label: "EN" },
+  { value: "zh", label: "中文" },
+];
+
+const currentCountry = computed(() => {
+  return countries.find((c) => c.code === settings.value.countryCode) || null;
+});
 
 const container = useTemplateRef("container");
 const swapy = ref<Swapy | null>(null);
@@ -118,6 +139,17 @@ async function editCard() {
       />
     </div>
     <div>
+      <USelectMenu
+        :model-value="currentCountry || countryOptions[0]"
+        :items="countryOptions"
+        placeholder="全局地区"
+        label-key="name"
+        size="xs"
+        class="w-28"
+        ui="{ content: 'min-w-fit' }"
+        :icon="currentCountry?.icon"
+        @update:model-value="(v: any) => updateSettings({ countryCode: v?.code || '' })"
+      />
       <UButton
         :icon="editState ? 'i-icon-park-twotone:back' : 'i-icon-park-twotone:edit'"
         color="neutral"
@@ -152,6 +184,7 @@ async function editCard() {
           :key="itemId"
           :data-swapy-item="itemId"
           :edit-state="editState"
+          :global-country="settings.countryCode"
         />
       </div>
     </div>
