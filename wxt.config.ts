@@ -7,6 +7,7 @@ export default defineConfig({
   srcDir: "src",
   modules: ["@wxt-dev/module-vue"],
   manifest: {
+    key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAul/qhkola72hJ1MvMuL7fP4H7qyxMQJOLmzJXg9ISvqDmU7EaHWPQZvMd2vrBniLWuAY0l4+/A8fZ3nDoZEmJqz0R4rOM1hcaBqaDZY48nMZcZ+4wD8ZEkeaDwu7rx5Ox0o4X5DF7oxMUXoQGbbzZQkL7ANmiAJiqg3akse9RN6mM80hRiRXNqPcDEvWul5bUait05taJnH9KvH8+k3+PU7baUd7wOOXs5DnnIQbgaKE2gmLPLmKrauS09EkHFMvSH/5hsOWUHTna12fXWSSsRzPDEQG3psNCs3CSHawDs9klnfABVfKypXz3DQaO3rG69mF6f6i3juRqrOj9jNKLQIDAQAB",
     default_locale: "zh_CN",
     name: "__MSG_extName__",
     description: "__MSG_extDescription__",
@@ -36,7 +37,6 @@ export default defineConfig({
             primary: "purple",
             neutral: "zinc",
           },
-          router: false
         },
       }),
     ],
